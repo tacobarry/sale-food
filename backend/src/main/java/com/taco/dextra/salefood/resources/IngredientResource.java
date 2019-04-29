@@ -1,4 +1,4 @@
-package com.taco.dextra.salefood.controllers;
+package com.taco.dextra.salefood.resources;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +22,10 @@ import com.taco.dextra.salefood.models.Ingredient;
 public class IngredientResource {
 
 	private Map<Integer, Ingredient> ingredients;
+
+	public Map<Integer, Ingredient> getIngredients() {
+		return ingredients;
+	}
 
 	public IngredientResource() {
 		ingredients = new HashMap<Integer, Ingredient>();
