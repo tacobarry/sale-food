@@ -51,4 +51,9 @@ public class Ingredient implements IProduct {
 		return this.value;
 	}
 
+	@Override
+	public String toString() {
+		return "Ingrediente: [id="+this.id+", name="+this.name+", value="+this.value+"]";
+	}
+
 }

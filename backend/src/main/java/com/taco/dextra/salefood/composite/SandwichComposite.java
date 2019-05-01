@@ -1,19 +1,22 @@
 package com.taco.dextra.salefood.composite;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.lang.NonNull;
 
 import com.taco.dextra.salefood.interfaces.IProduct;
 import com.taco.dextra.salefood.models.Ingredient;
+import com.taco.dextra.salefood.resources.repository.IngredientsRepository;
 
-public class SandwichComposite implements IProduct{
+public class SandwichComposite implements IProduct {
 	private int id;
 	private String name;
 	private float value;
 
-	private List<Ingredient> ingredients;
+	private List<Integer> ingredientsId;
 
 	@Override
 	public int getId() {
@@ -39,18 +42,40 @@ public class SandwichComposite implements IProduct{
 	@Override
 	public float getValue() {
 		float value = 0f;
-		for (Ingredient ingredient: this.ingredients) {
-			value += ingredient.getValue();
+		Iterator it = IngredientsRepository.instance.getIngredientMap().values().iterator();
+		while (it.hasNext()) {
+			Ingredient ingredient = (Ingredient) it.next();
+			if (this.ingredientsId.contains(ingredient.getId())) {
+				value += ingredient.getValue();
+			}
 		}
 		return value;
 	}
-	
-	public SandwichComposite add(Ingredient ingredient) {
-		if (this.ingredients == null) {
-			this.ingredients = new ArrayList<Ingredient>();
+
+	public SandwichComposite add(Integer id) {
+		if (this.ingredientsId == null) {
+			this.ingredientsId = new ArrayList<Integer>();
 		}
-		this.ingredients.add(ingredient);
+		this.ingredientsId.add(id);
 		return this;
 	}
 	
+	public void addAll(Collection<Integer> ingredientsId) {
+		if (this.ingredientsId == null) {
+			this.ingredientsId = new ArrayList<Integer>();
+		}
+		this.ingredientsId.addAll(ingredientsId);
+	}
+
+	public List<Ingredient> getIngredients() {
+		List<Ingredient> ingredientList = new ArrayList<Ingredient>();
+		Iterator it = IngredientsRepository.instance.getIngredientMap().values().iterator();
+		while (it.hasNext()) {
+			Ingredient ingredient = (Ingredient) it.next();
+			if (this.ingredientsId.contains(ingredient.getId())) {
+				ingredientList.add(ingredient);
+			}
+		}
+		return ingredientList;
+	}
 }
