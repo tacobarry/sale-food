@@ -21,8 +21,6 @@ import com.taco.dextra.salefood.resources.repository.IngredientsRepository;
 @RequestMapping(value="/api")
 public class IngredientResource {
 
-	protected IngredientsRepository iRepository = new IngredientsRepository();
-
 	public IngredientResource() {
 		IngredientsRepository.instance.add(new Ingredient(IngredientEnum.LETUCE.getId(), IngredientEnum.LETUCE.getName(), .4f));
 		IngredientsRepository.instance.add(

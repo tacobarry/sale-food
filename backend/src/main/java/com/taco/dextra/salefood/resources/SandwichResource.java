@@ -1,9 +1,7 @@
 package com.taco.dextra.salefood.resources;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,18 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.taco.dextra.salefood.composite.SandwichComposite;
 import com.taco.dextra.salefood.dto.SandwichDTO;
 import com.taco.dextra.salefood.enumeration.IngredientEnum;
-import com.taco.dextra.salefood.resources.repository.IngredientsRepository;
+import com.taco.dextra.salefood.resources.repository.SandwichRepository;
 
 @RestController
 @RequestMapping(value="/api")
 public class SandwichResource {
 
-	private Map<Integer, SandwichComposite> sandwichMap;
-
 	public SandwichResource() {
-		sandwichMap = new HashMap<Integer, SandwichComposite>();
-
-		sandwichMap.put(11, 
+		SandwichRepository.instance.add( 
 			new SandwichComposite()
 				.setId(11)
 				.setName("X-Bacon")
@@ -37,14 +31,14 @@ public class SandwichResource {
 				.add(IngredientEnum.HAMBURGUER.getId())
 				.add(IngredientEnum.CHEESE.getId())
 		);
-		sandwichMap.put(12, 
+		SandwichRepository.instance.add( 
 			new SandwichComposite()
 				.setId(12)
 				.setName("X-Burguer")
 				.add(IngredientEnum.HAMBURGUER.getId())
 				.add(IngredientEnum.CHEESE.getId())
 		);
-		sandwichMap.put(13, 
+		SandwichRepository.instance.add(
 			new SandwichComposite()
 				.setId(13)
 				.setName("X-Egg")
@@ -52,7 +46,7 @@ public class SandwichResource {
 				.add(IngredientEnum.HAMBURGUER.getId())
 				.add(IngredientEnum.CHEESE.getId())
 		);
-		sandwichMap.put(14, 
+		SandwichRepository.instance.add(
 			new SandwichComposite()
 				.setId(14)
 				.setName("X-Egg Bacon")
@@ -66,18 +60,21 @@ public class SandwichResource {
 	@PostMapping("/sandwich")
 	public ResponseEntity<SandwichComposite> create(@RequestBody SandwichDTO dto) {
 		SandwichComposite sc = dto.dtoToSandwich();
-		this.sandwichMap.put(sc.getId(), sc);
+		SandwichRepository.instance.add(sc);
 		return new ResponseEntity<SandwichComposite>(sc, HttpStatus.CREATED);
 	}
 
 	@GetMapping("/sandwiches")
 	public ResponseEntity<List<SandwichComposite>> findAll() {
-		return new ResponseEntity<List<SandwichComposite>>(new ArrayList<SandwichComposite>(this.sandwichMap.values()), HttpStatus.OK);
+		return new ResponseEntity<List<SandwichComposite>>(
+			new ArrayList<SandwichComposite>(SandwichRepository.instance.getSandwichMap().values()),
+			HttpStatus.OK
+		);
 	}
 
 	@GetMapping("/sandwich/{id}")
 	public ResponseEntity<SandwichComposite> getSandwichById(@PathVariable("id") int id) {
-		SandwichComposite sandwich = this.sandwichMap.get(id);
+		SandwichComposite sandwich = SandwichRepository.instance.getSandwichMap().get(id);
 		if (sandwich == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -86,7 +83,7 @@ public class SandwichResource {
 
 	@PutMapping("/sandwich/{id}")
 	public ResponseEntity<SandwichComposite> update(@PathVariable("id") int id, @RequestBody SandwichDTO dto) {
-		SandwichComposite sandwich = this.sandwichMap.get(id);
+		SandwichComposite sandwich = SandwichRepository.instance.getSandwichMap().get(id);
 		if (sandwich == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}

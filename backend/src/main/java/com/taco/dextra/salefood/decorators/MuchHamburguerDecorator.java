@@ -4,31 +4,41 @@ import java.util.Iterator;
 
 import com.taco.dextra.salefood.enumeration.IngredientEnum;
 import com.taco.dextra.salefood.interfaces.IProduct;
+import com.taco.dextra.salefood.models.ItemCart;
+import com.taco.dextra.salefood.resources.repository.IngredientsRepository;
 
 public class MuchHamburguerDecorator extends DiscountDecorator {
-	public MuchHamburguerDecorator(IProduct ip) {
+	private static int QUANTITY_OF_HAMBURGUER_FOR_DISCOUNT = 3;
+
+	public MuchHamburguerDecorator(ItemCart ip) {
 		super(ip);
 	}
 
-	private static int QUANTITY_OF_HAMBURGUER_FOR_DISCOUNT = 3;
+	public float getDiscount() {
+		return this.discount;
+	}
 
 	@Override
 	public float getValue() {
-		Iterator it = this.aditionalList.iterator();
+//		this.value = 0f;
+		Iterator<Integer> it = super.additionalIds.iterator();
 		int countHamburguer = 0;
 		IProduct hamburguer = null;
 		while (it.hasNext()) {
-			IProduct product = (IProduct) it.next();
+			Integer ingredientId = it.next();
+			IProduct product = IngredientsRepository.instance.getIngredientMap().get(ingredientId);
+			this.value += product.getValue();
 			if (product.getId() == IngredientEnum.HAMBURGUER.getId()) {
 				countHamburguer++;
 				hamburguer = product;
 			}
 		}
 		if (hamburguer != null) {
-			return (float) (this.value - hamburguer.getValue() * (Math.floor(new Float(countHamburguer/QUANTITY_OF_HAMBURGUER_FOR_DISCOUNT).doubleValue())));			
-		} else {
-			return this.value;
+			float discountValue = (float) (hamburguer.getValue() * (Math.floor(new Float(countHamburguer/QUANTITY_OF_HAMBURGUER_FOR_DISCOUNT).doubleValue())));
+			this.value = (float) ( discountValue);
+			this.discount = discountValue;
 		}
+		return this.value;
 	}
 
 }

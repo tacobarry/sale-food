@@ -37,11 +37,11 @@ public class SandwichDTO implements IProduct {
 		return this.value;
 	}
 
-	public Integer[] getIngredientWrapper() {
+	public Integer[] getIngredientArray() {
 		return ingredientArray;
 	}
 
-	public void setIngredientWrapper(Integer[] ingredientArray) {
+	public void setIngredientArray(Integer[] ingredientArray) {
 		this.ingredientArray = ingredientArray;
 	}
 	
@@ -49,7 +49,9 @@ public class SandwichDTO implements IProduct {
 		SandwichComposite composite = new SandwichComposite();
 		composite.setId(this.id);
 		composite.setName(this.name);
-		composite.addAll(Arrays.asList(this.ingredientArray));
+		if (this.ingredientArray != null && this.ingredientArray.length > 0) {
+			composite.addAll(Arrays.asList(this.ingredientArray));
+		}
 		return composite;
 	}
 

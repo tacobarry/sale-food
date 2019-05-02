@@ -1,9 +1,7 @@
 package com.taco.dextra.salefood.resources;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,58 +14,55 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.taco.dextra.salefood.composite.SandwichComposite;
+import com.taco.dextra.salefood.dto.ItemCartDTO;
 import com.taco.dextra.salefood.models.ItemCart;
+import com.taco.dextra.salefood.resources.repository.ItemCartRepository;
 
 @RestController
 @RequestMapping(value="/api")
 public class ItemCartResource {
-	private Map<Integer, ItemCart> itemCartMap;
-	
-	public ItemCartResource() {
-		this.itemCartMap = new HashMap<Integer, ItemCart>();
-	}
-	
+
+	public ItemCartResource() {}
+
 	@PostMapping("/itemcart")
-	public ResponseEntity<ItemCart> createItem(@RequestBody SandwichComposite prod) {
-		if (this.itemCartMap == null) {
-			this.itemCartMap = new HashMap<Integer, ItemCart>();
-		}
-		ItemCart icart = new ItemCart(prod);
-		itemCartMap.put(icart.getId(), icart);
+	public ResponseEntity<ItemCart> createItem(@RequestBody ItemCartDTO dto) {
+		ItemCart icart = dto.dtoToItemCart();
+		ItemCartRepository.instance.add(icart);
 		return new ResponseEntity<ItemCart>(icart, HttpStatus.CREATED);
 	}
-	
+
 	@GetMapping("/itemscart")
 	public ResponseEntity<List<ItemCart>> getAllItems() {
-		return new ResponseEntity<List<ItemCart>>(new ArrayList<ItemCart>(this.itemCartMap.values()), HttpStatus.OK);
+		return new ResponseEntity<List<ItemCart>>(
+			new ArrayList<ItemCart>(ItemCartRepository.instance.getItemCartMap().values()),
+			HttpStatus.OK
+		);
 	}
 
 	@GetMapping("/itemcart/{id}")
 	public ResponseEntity<ItemCart> getItem(@PathVariable int id) {
-		ItemCart icart = itemCartMap.get(id);
+		ItemCart icart = ItemCartRepository.instance.getItemCart(id);
 		if (icart == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<ItemCart>(icart, HttpStatus.OK);
 	}
-	
+
 	@PutMapping("/itemcart/{id}")
-	public ResponseEntity<ItemCart> updateItem(@PathVariable("id") int id, @RequestBody ItemCart itCart) {
-		ItemCart icart = itemCartMap.get(id);
+	public ResponseEntity<ItemCart> updateItem(@PathVariable("id") int id, @RequestBody ItemCartDTO itCartDTO) {
+		ItemCart icart = ItemCartRepository.instance.getItemCart(id);
 		if (icart == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		icart.setProduct(icart.getProduct());
-		icart.setAdditionalList(icart.getAdditionalList());
-		
-		return new ResponseEntity<ItemCart>(itCart, HttpStatus.OK);
+		icart = itCartDTO.dtoToItemCart();
+		ItemCartRepository.instance.add(icart);
+		return new ResponseEntity<ItemCart>(icart, HttpStatus.OK);
 	}
-	
+
 	@DeleteMapping("/itemcart/{id}")
 	public ResponseEntity<Object> delete(@PathVariable int id) {
-		ItemCart icart = itemCartMap.get(id);
-		if (icart == null) {
+		boolean removedElem = ItemCartRepository.instance.remover(id);
+		if (removedElem == false) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(HttpStatus.PERMANENT_REDIRECT);

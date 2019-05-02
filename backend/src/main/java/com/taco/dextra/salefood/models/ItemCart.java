@@ -1,21 +1,23 @@
 package com.taco.dextra.salefood.models;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import com.taco.dextra.salefood.composite.SandwichComposite;
 import com.taco.dextra.salefood.interfaces.IProduct;
+import com.taco.dextra.salefood.resources.repository.IngredientsRepository;
 import com.taco.dextra.salefood.singletons.SequenceSingleton;
 
 public class ItemCart implements IProduct {
 	private int id;
 	private String name;
-	private float value;
+	float value;
 	private String message;
 
 	private SandwichComposite product;
-	private List<IProduct> additionalList = new ArrayList<IProduct>();
+	private List<Integer> additionalIds = new ArrayList<Integer>();
 	
 	public ItemCart() {}
 	
@@ -23,8 +25,12 @@ public class ItemCart implements IProduct {
 		this.product = prod;
 	}
 
-	public void setId() {
-		this.id = SequenceSingleton.instance.getValue();
+	public void setId(Integer id) {
+		if (id == null) {
+			this.id = SequenceSingleton.instance.getValue();
+		} else {
+			this.id = id;
+		}
 	}
 
 	@Override
@@ -48,22 +54,19 @@ public class ItemCart implements IProduct {
 		return this.product;
 	}
 	
-	public void setAdditionalList(List<IProduct> additionalList) {
-		this.additionalList = new ArrayList<IProduct>();
-		this.additionalList.addAll(additionalList);
-	}
-	
-	public List<IProduct> getAdditionalList() {
-		return this.additionalList;
+	public List<Integer> getAdditionalIds() {
+		return this.additionalIds;
 	}
 
 	@Override
 	public float getValue() {
 		this.value = product.getValue();
-		Iterator it = additionalList.iterator();
-		while (it.hasNext()) {
-			IProduct product = (IProduct) it.next();
-			this.value += product.getValue();
+		if (!this.additionalIds.isEmpty()) {
+			Iterator it = this.additionalIds.iterator();
+			while (it.hasNext()) {
+				Integer ingredientId = (Integer) it.next();
+				value += IngredientsRepository.instance.getIngredientMap().get(ingredientId).getValue();
+			}
 		}
 		return value;
 	}
@@ -76,9 +79,19 @@ public class ItemCart implements IProduct {
 		this.message = message;
 	}
 
-	public ItemCart add(IProduct ip) {
-		this.additionalList.add(ip);
+	public ItemCart add(Integer ip) {
+		if (this.additionalIds == null) {
+			this.additionalIds = new ArrayList<Integer>();
+		}
+		this.additionalIds.add(ip);
 		return this;
+	}
+
+	public void addAll(Collection<Integer> additionalIds) {
+		if (this.additionalIds == null) {
+			this.additionalIds = new ArrayList<Integer>();
+		}
+		this.additionalIds.addAll(additionalIds);
 	}
 
 }

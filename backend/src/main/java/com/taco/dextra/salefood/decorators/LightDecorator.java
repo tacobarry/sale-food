@@ -4,20 +4,27 @@ import java.util.Iterator;
 
 import com.taco.dextra.salefood.enumeration.IngredientEnum;
 import com.taco.dextra.salefood.interfaces.IProduct;
+import com.taco.dextra.salefood.models.ItemCart;
+import com.taco.dextra.salefood.resources.repository.IngredientsRepository;
 
 public class LightDecorator extends DiscountDecorator {
 
-	public LightDecorator(IProduct ip) {
+	public LightDecorator(ItemCart ip) {
 		super(ip);
+	}
+
+	public float getDiscount() {
+		return this.discount;
 	}
 
 	@Override
 	public float getValue() {
-		Iterator it = super.aditionalList.iterator();
+		Iterator<Integer> it = super.additionalIds.iterator();
 		boolean haveLetuce = false;
 		boolean haveBacon = false;
 		while (it.hasNext() || !haveBacon) {
-			IProduct product = (IProduct) it.next();
+			Integer ingredientId = it.next();
+			IProduct product = IngredientsRepository.instance.getIngredientMap().get(ingredientId);
 			if (!haveLetuce) {
 				haveLetuce = (IngredientEnum.LETUCE.getId() == product.getId());
 			}
@@ -26,7 +33,11 @@ public class LightDecorator extends DiscountDecorator {
 			}
 		}
 		
-		return (float) ((haveLetuce && !haveBacon) ? (0.9 * super.value) : super.value);
+		if (haveLetuce && !haveBacon) {
+			this.value = super.value * 0.1f;
+		}
+		this.value = 0f;
+		return this.value;
 	}
 
 }

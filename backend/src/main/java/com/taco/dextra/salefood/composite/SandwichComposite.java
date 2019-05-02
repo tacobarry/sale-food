@@ -42,11 +42,13 @@ public class SandwichComposite implements IProduct {
 	@Override
 	public float getValue() {
 		float value = 0f;
-		Iterator it = IngredientsRepository.instance.getIngredientMap().values().iterator();
-		while (it.hasNext()) {
-			Ingredient ingredient = (Ingredient) it.next();
-			if (this.ingredientsId.contains(ingredient.getId())) {
-				value += ingredient.getValue();
+		if (!this.ingredientsId.isEmpty()) {
+			Iterator it = IngredientsRepository.instance.getIngredientMap().values().iterator();
+			while (it.hasNext()) {
+				Ingredient ingredient = (Ingredient) it.next();
+				if (this.ingredientsId.contains(ingredient.getId())) {
+					value += ingredient.getValue();
+				}
 			}
 		}
 		return value;
@@ -69,10 +71,11 @@ public class SandwichComposite implements IProduct {
 
 	public List<Ingredient> getIngredients() {
 		List<Ingredient> ingredientList = new ArrayList<Ingredient>();
-		Iterator it = IngredientsRepository.instance.getIngredientMap().values().iterator();
+		Iterator it = this.ingredientsId.iterator();
 		while (it.hasNext()) {
-			Ingredient ingredient = (Ingredient) it.next();
-			if (this.ingredientsId.contains(ingredient.getId())) {
+			Integer ingredientId = (Integer) it.next();
+			Ingredient ingredient = IngredientsRepository.instance.getIngredientMap().get(ingredientId);
+			if (ingredient != null) {
 				ingredientList.add(ingredient);
 			}
 		}

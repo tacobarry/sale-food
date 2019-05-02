@@ -1,20 +1,31 @@
 package com.taco.dextra.salefood.decorators;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.taco.dextra.salefood.interfaces.IProduct;
+import com.taco.dextra.salefood.models.ItemCart;
 
-public abstract class DiscountDecorator implements IProduct {
+public abstract class DiscountDecorator extends ItemCart implements IProduct {
 	protected int id;
 	protected String name;
 	protected float value;
+	protected float discount;
 	
+	public float getDiscount() {
+		return discount;
+	}
+
 	protected IProduct product;
 	
-	protected List<IProduct> aditionalList;
+	protected List<Integer> additionalIds = new ArrayList<Integer>();
 	
-	public DiscountDecorator(IProduct ip) {
-		this.product = ip;
+	public DiscountDecorator(ItemCart ip) {
+		this.value = ip.getValue();
+		this.name = ip.getName();
+		this.value = ip.getValue();
+		this.product = ip.getProduct();
+		this.additionalIds = ip.getAdditionalIds();
 	}
 
 	public IProduct setId(int id) {
@@ -45,8 +56,8 @@ public abstract class DiscountDecorator implements IProduct {
 	@Override
 	public abstract float getValue();
 	
-	public IProduct add(IProduct ip) {
-		this.aditionalList.add(ip);
+	public DiscountDecorator add(Integer ingredientId) {
+		this.additionalIds.add(ingredientId);
 		return this;
 	}
 
