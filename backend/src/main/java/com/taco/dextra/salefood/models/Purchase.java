@@ -6,11 +6,9 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import com.taco.dextra.salefood.decorators.DiscountDecorator;
 import com.taco.dextra.salefood.decorators.LightDecorator;
 import com.taco.dextra.salefood.decorators.MuchCheeseDecorator;
 import com.taco.dextra.salefood.decorators.MuchHamburguerDecorator;
-import com.taco.dextra.salefood.interfaces.IProduct;
 import com.taco.dextra.salefood.resources.repository.ItemCartRepository;
 import com.taco.dextra.salefood.singletons.SequenceSingleton;
 
@@ -61,13 +59,14 @@ public class Purchase {
 				continue;
 			}
 //			System.out.println("prod 1:" + prod.getValue());
-			MuchCheeseDecorator cheese = new MuchCheeseDecorator(prod);
-			System.out.println("prod 2:" + cheese.getValue());
-			MuchHamburguerDecorator hambDiscount = new MuchHamburguerDecorator(prod);
-			System.out.println("prod 3:" +  hambDiscount.getValue());
-			LightDecorator light = new LightDecorator(prod);
-			this.value += prod.getValue() - cheese.getValue() - hambDiscount.getValue() - light.getValue();
-			System.out.println("prod 4:" + this.value);
+			ItemCart lightDecor = new LightDecorator(prod);
+			System.out.println("prod 4:" + lightDecor.getDiscount());
+			ItemCart cheeseDecor = new MuchCheeseDecorator(prod);
+			System.out.println("prod 2:" + cheeseDecor.getDiscount());
+			ItemCart hambDecor = new MuchHamburguerDecorator(prod);
+			System.out.println("prod 3:" +  hambDecor.getDiscount());
+			this.value += prod.getValue() - cheeseDecor.getDiscount() - hambDecor.getDiscount() - lightDecor.getDiscount();
+			System.out.println("prod 5:" + this.value);
 		}
 		return this.value;
 	}

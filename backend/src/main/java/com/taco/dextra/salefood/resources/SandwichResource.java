@@ -3,6 +3,7 @@ package com.taco.dextra.salefood.resources;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,11 +17,16 @@ import org.springframework.web.bind.annotation.RestController;
 import com.taco.dextra.salefood.composite.SandwichComposite;
 import com.taco.dextra.salefood.dto.SandwichDTO;
 import com.taco.dextra.salefood.enumeration.IngredientEnum;
+import com.taco.dextra.salefood.models.Ingredient;
 import com.taco.dextra.salefood.resources.repository.SandwichRepository;
+import com.taco.dextra.salefood.services.IngredientService;
 
 @RestController
 @RequestMapping(value="/api")
 public class SandwichResource {
+	
+	@Autowired
+	private IngredientService ingredientService;
 
 	public SandwichResource() {
 		SandwichRepository.instance.add( 
@@ -60,6 +66,10 @@ public class SandwichResource {
 	@PostMapping("/sandwich")
 	public ResponseEntity<SandwichComposite> create(@RequestBody SandwichDTO dto) {
 		SandwichComposite sc = dto.dtoToSandwich();
+		List<Ingredient> ingredientList = ingredientService.getIngredientsByArray(dto.getIngredientArray()).getBody();
+		if (ingredientList == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 		SandwichRepository.instance.add(sc);
 		return new ResponseEntity<SandwichComposite>(sc, HttpStatus.CREATED);
 	}

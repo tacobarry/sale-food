@@ -3,6 +3,7 @@ package com.taco.dextra.salefood.resources;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,18 +16,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.taco.dextra.salefood.dto.PurchaseDTO;
+import com.taco.dextra.salefood.models.ItemCart;
 import com.taco.dextra.salefood.models.Purchase;
 import com.taco.dextra.salefood.resources.repository.PurchaseRepository;
+import com.taco.dextra.salefood.services.ItemCartService;
 
 @RestController
 @RequestMapping(value="/api")
 public class PurchaseResource {
+	
+	@Autowired
+	ItemCartService itemCartService;
 
 	public PurchaseResource() {}
 
 	@PostMapping("/purchase")
 	public ResponseEntity<Purchase> createPurchase(@RequestBody PurchaseDTO purchaseDTO) {
 		Purchase purchase = purchaseDTO.dtoToPurchase();
+		List<ItemCart> itemCartList = itemCartService.getAllItemCarts(purchaseDTO.getItemCartArr()).getBody();
+		if (itemCartList.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 		PurchaseRepository.instance.add(purchase);
 		return new ResponseEntity<Purchase>(purchase, HttpStatus.CREATED);
 	}

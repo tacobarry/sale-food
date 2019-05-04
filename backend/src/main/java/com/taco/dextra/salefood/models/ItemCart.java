@@ -15,6 +15,7 @@ public class ItemCart implements IProduct {
 	private String name;
 	float value;
 	private String message;
+	private float discount;
 
 	private SandwichComposite product;
 	private List<Integer> additionalIds = new ArrayList<Integer>();
@@ -40,8 +41,8 @@ public class ItemCart implements IProduct {
 
 	@Override
 	public String getName() {
-		if (product != null) {
-			this.name = product.getName();
+		if (this.product != null) {
+			this.name = this.product.getName();
 		}
 		return this.name;
 	}
@@ -60,15 +61,19 @@ public class ItemCart implements IProduct {
 
 	@Override
 	public float getValue() {
-		this.value = product.getValue();
+		this.value = this.product.getValue();
 		if (!this.additionalIds.isEmpty()) {
 			Iterator it = this.additionalIds.iterator();
 			while (it.hasNext()) {
 				Integer ingredientId = (Integer) it.next();
-				value += IngredientsRepository.instance.getIngredientMap().get(ingredientId).getValue();
+				Ingredient i = IngredientsRepository.instance.getIngredientMap().get(ingredientId);
+				if(i == null) {
+					continue;
+				}
+				this.value += i.getValue();
 			}
 		}
-		return value;
+		return this.value;
 	}
 
 	public String getMessage() {
@@ -92,6 +97,14 @@ public class ItemCart implements IProduct {
 			this.additionalIds = new ArrayList<Integer>();
 		}
 		this.additionalIds.addAll(additionalIds);
+	}
+
+	public float getDiscount() {
+		return this.discount;
+	}
+
+	public void setDiscount(float discount) {
+		this.discount = discount;
 	}
 
 }
