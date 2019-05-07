@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,7 @@ import com.taco.dextra.salefood.enumeration.IngredientEnum;
 import com.taco.dextra.salefood.models.Ingredient;
 import com.taco.dextra.salefood.resources.repository.IngredientsRepository;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*", exposedHeaders = "Access-Control-Allow-Origin")
 @RestController
 @RequestMapping(value="/api")
 public class IngredientResource {
@@ -49,7 +51,7 @@ public class IngredientResource {
 		);
 	}
 
-	@RequestMapping(value = "/ingredients", method = RequestMethod.GET)
+	@RequestMapping(value = "/ingredients", method={RequestMethod.OPTIONS,RequestMethod.GET})
 	public ResponseEntity<List<Ingredient>> findAll() {
 		return new ResponseEntity<List<Ingredient>>(
 			new ArrayList<Ingredient>(IngredientsRepository.instance.getIngredientMap().values()),

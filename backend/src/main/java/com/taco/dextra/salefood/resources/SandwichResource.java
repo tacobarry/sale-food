@@ -6,12 +6,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.taco.dextra.salefood.composite.SandwichComposite;
@@ -21,6 +23,7 @@ import com.taco.dextra.salefood.models.Ingredient;
 import com.taco.dextra.salefood.resources.repository.SandwichRepository;
 import com.taco.dextra.salefood.services.IngredientService;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*", exposedHeaders = "Access-Control-Allow-Origin")
 @RestController
 @RequestMapping(value="/api")
 public class SandwichResource {
@@ -37,7 +40,7 @@ public class SandwichResource {
 				.add(IngredientEnum.HAMBURGUER.getId())
 				.add(IngredientEnum.CHEESE.getId())
 		);
-		SandwichRepository.instance.add( 
+		SandwichRepository.instance.add(
 			new SandwichComposite()
 				.setId(12)
 				.setName("X-Burguer")
@@ -74,7 +77,7 @@ public class SandwichResource {
 		return new ResponseEntity<SandwichComposite>(sc, HttpStatus.CREATED);
 	}
 
-	@GetMapping("/sandwiches")
+	@RequestMapping(value = "/sandwiches", method={RequestMethod.OPTIONS,RequestMethod.GET})
 	public ResponseEntity<List<SandwichComposite>> findAll() {
 		return new ResponseEntity<List<SandwichComposite>>(
 			new ArrayList<SandwichComposite>(SandwichRepository.instance.getSandwichMap().values()),

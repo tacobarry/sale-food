@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.taco.dextra.salefood.dto.PurchaseDTO;
@@ -21,6 +23,7 @@ import com.taco.dextra.salefood.models.Purchase;
 import com.taco.dextra.salefood.resources.repository.PurchaseRepository;
 import com.taco.dextra.salefood.services.ItemCartService;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*", exposedHeaders = "Access-Control-Allow-Origin")
 @RestController
 @RequestMapping(value="/api")
 public class PurchaseResource {
@@ -41,7 +44,7 @@ public class PurchaseResource {
 		return new ResponseEntity<Purchase>(purchase, HttpStatus.CREATED);
 	}
 
-	@GetMapping("/purchases")
+	@RequestMapping(value = "/purchases", method={RequestMethod.OPTIONS,RequestMethod.GET})
 	public ResponseEntity<List<Purchase>> getAllPurchases() {
 		return new ResponseEntity<List<Purchase>>(
 			new ArrayList<Purchase>(PurchaseRepository.instance.getPurchaseMap().values()),

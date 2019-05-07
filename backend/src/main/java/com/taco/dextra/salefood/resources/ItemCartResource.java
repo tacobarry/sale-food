@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.taco.dextra.salefood.composite.SandwichComposite;
@@ -24,6 +26,7 @@ import com.taco.dextra.salefood.resources.repository.ItemCartRepository;
 import com.taco.dextra.salefood.services.IngredientService;
 import com.taco.dextra.salefood.services.SandwichService;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*", exposedHeaders = "Access-Control-Allow-Origin")
 @RestController
 @RequestMapping(value="/api")
 public class ItemCartResource {
@@ -57,8 +60,8 @@ public class ItemCartResource {
 //			HttpStatus.OK
 //		);
 //	}
-	
-	@GetMapping("/itemcarts")
+
+	@RequestMapping(value = "/itemcarts", method={RequestMethod.OPTIONS,RequestMethod.GET})
 	public ResponseEntity<List<ItemCart>> getAllItensByArray(@RequestBody Integer[] idArray) {
 		Map<Integer, ItemCart> itemCartMap = ItemCartRepository.instance.getItemCartMap();
 		if (idArray.length == 0) {
