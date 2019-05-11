@@ -38,51 +38,53 @@ public class ItemCartResource {
 
 	public ItemCartResource() {}
 
-	@PostMapping("/itemcart")
+	@RequestMapping(value = "/itemcart", method={RequestMethod.OPTIONS,RequestMethod.POST})
 	public ResponseEntity<ItemCart> createItem(@RequestBody ItemCartDTO dto) {
 		ItemCart icart = dto.dtoToItemCart();
 		SandwichComposite sandwich = sandwichService.getSandwichById(dto.getProductId()).getBody();
 		if (sandwich == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
-		List<Ingredient> ingredientList = ingredientService.getIngredientsByArray(dto.getIngredientArray()).getBody();
-		if (ingredientList == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		if (dto.getIngredientArray() != null) {
+			List<Ingredient> ingredientList = ingredientService.getIngredientsByArray(dto.getIngredientArray()).getBody();
+			if (ingredientList == null) {
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			}
 		}
 		ItemCartRepository.instance.add(icart);
 		return new ResponseEntity<ItemCart>(icart, HttpStatus.CREATED);
 	}
 
-//	@GetMapping("/itemcarts")
-//	public ResponseEntity<List<ItemCart>> getAllItems() {
-//		return new ResponseEntity<List<ItemCart>>(
-//			new ArrayList<ItemCart>(ItemCartRepository.instance.getItemCartMap().values()),
-//			HttpStatus.OK
-//		);
-//	}
-
-	@RequestMapping(value = "/itemcarts", method={RequestMethod.OPTIONS,RequestMethod.GET})
-	public ResponseEntity<List<ItemCart>> getAllItensByArray(@RequestBody Integer[] idArray) {
-		Map<Integer, ItemCart> itemCartMap = ItemCartRepository.instance.getItemCartMap();
-		if (idArray.length == 0) {
-			return new ResponseEntity<>(HttpStatus.OK);
-		}
-		List<ItemCart> itemCartList = new ArrayList<ItemCart>();
-		for (Integer i: idArray) {
-			ItemCart ic = itemCartMap.get(i);
-			if (ic == null) {
-				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-			}
-			itemCartList.add(ic);
-		}
-		return new ResponseEntity<List<ItemCart>>(itemCartList, HttpStatus.OK);
+	@GetMapping("/itemcarts")
+	public ResponseEntity<List<ItemCart>> getAllItems() {
+		return new ResponseEntity<List<ItemCart>>(
+			new ArrayList<ItemCart>(ItemCartRepository.instance.getItemCartMap().values()),
+			HttpStatus.OK
+		);
 	}
+
+//	@RequestMapping(value = "/itemcarts", method={RequestMethod.OPTIONS,RequestMethod.GET})
+//	public ResponseEntity<List<ItemCart>> getAllItensByArray(@RequestBody Integer[] idArray) {
+//		Map<Integer, ItemCart> itemCartMap = ItemCartRepository.instance.getItemCartMap();
+//		if (idArray.length == 0) {
+//			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//		}
+//		List<ItemCart> itemCartList = new ArrayList<ItemCart>();
+//		for (Integer i: idArray) {
+//			ItemCart ic = itemCartMap.get(i);
+//			if (ic == null) {
+//				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//			}
+//			itemCartList.add(ic);
+//		}
+//		return new ResponseEntity<List<ItemCart>>(itemCartList, HttpStatus.OK);
+//	}
 
 	@GetMapping("/itemcart/{id}")
 	public ResponseEntity<ItemCart> getItem(@PathVariable int id) {
 		ItemCart icart = ItemCartRepository.instance.getItemCart(id);
 		if (icart == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
 		return new ResponseEntity<ItemCart>(icart, HttpStatus.OK);
 	}
@@ -91,7 +93,7 @@ public class ItemCartResource {
 	public ResponseEntity<ItemCart> updateItem(@PathVariable("id") int id, @RequestBody ItemCartDTO itCartDTO) {
 		ItemCart icart = ItemCartRepository.instance.getItemCart(id);
 		if (icart == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
 		icart = itCartDTO.dtoToItemCart();
 		ItemCartRepository.instance.add(icart);
@@ -102,7 +104,7 @@ public class ItemCartResource {
 	public ResponseEntity<Object> delete(@PathVariable int id) {
 		boolean removedElem = ItemCartRepository.instance.remover(id);
 		if (removedElem == false) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
 		return new ResponseEntity<>(HttpStatus.PERMANENT_REDIRECT);
 	}
