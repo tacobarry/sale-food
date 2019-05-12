@@ -9,10 +9,11 @@ import java.util.List;
 import com.taco.dextra.salefood.decorators.LightDecorator;
 import com.taco.dextra.salefood.decorators.MuchCheeseDecorator;
 import com.taco.dextra.salefood.decorators.MuchHamburguerDecorator;
+import com.taco.dextra.salefood.interfaces.IProduct;
 import com.taco.dextra.salefood.resources.repository.ItemCartRepository;
 import com.taco.dextra.salefood.singletons.SequenceSingleton;
 
-public class Purchase {
+public class Purchase implements IProduct {
 	
 	private int id;
 	private float value;
@@ -22,10 +23,15 @@ public class Purchase {
 
 	private List<Integer> itemCartList = new ArrayList<Integer>();
 
-	public void setId() {
-		this.id = SequenceSingleton.instance.getValue();
+	public void setId(Integer id) {
+		if (id == null) {
+			this.id = SequenceSingleton.instance.getValue();
+		} else {
+			this.id = id;
+		}
 	}
 	
+	@Override
 	public int getId() {
 		return this.id;
 	}
@@ -49,6 +55,7 @@ public class Purchase {
 		this.itemCartList.addAll(idsList);
 	}
 
+	@Override
 	public float getValue() {
 		Iterator<Integer> it = this.itemCartList.iterator();
 		this.value = 0f;
@@ -58,15 +65,10 @@ public class Purchase {
 			if (prod == null) {
 				continue;
 			}
-//			System.out.println("prod 1:" + prod.getValue());
 			ItemCart lightDecor = new LightDecorator(prod);
-			System.out.println("prod 4:" + lightDecor.getDiscount());
 			ItemCart cheeseDecor = new MuchCheeseDecorator(prod);
-			System.out.println("prod 2:" + cheeseDecor.getDiscount());
 			ItemCart hambDecor = new MuchHamburguerDecorator(prod);
-			System.out.println("prod 3:" +  hambDecor.getDiscount());
 			this.value += prod.getValue() - cheeseDecor.getDiscount() - hambDecor.getDiscount() - lightDecor.getDiscount();
-			System.out.println("prod 5:" + this.value);
 		}
 		return this.value;
 	}
@@ -96,5 +98,10 @@ public class Purchase {
 
 	public void setDelivered(boolean delivered) {
 		this.delivered = delivered;
+	}
+
+	@Override
+	public String getName() {
+		return this.where;
 	}
 }

@@ -7,11 +7,20 @@ import com.taco.dextra.salefood.models.Purchase;
 
 public class PurchaseDTO {
 
+	private Integer id;
 	private String where;
 	private Date date;
 	private boolean delivered;
 
 	private Integer[] itemCartArr;
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
 	public String getWhere() {
 		return where;
@@ -47,13 +56,13 @@ public class PurchaseDTO {
 
 	public Purchase dtoToPurchase() {
 		Purchase purchase = new Purchase();
+		purchase.setId(this.id);
 		purchase.setDate(this.date);
 		purchase.setDelivered(this.delivered);
 		purchase.setWhere(this.where);
 		if (this.itemCartArr != null && this.itemCartArr.length > 0) {
 			purchase.addAll(Arrays.asList(this.itemCartArr));
 		}
-		System.out.println(purchase);
 		return purchase;
 	}
 }
