@@ -29,7 +29,7 @@ public class IngredientResource {
 			new Ingredient()
 				.setId(IngredientEnum.BACON.getId())
 				.setName(IngredientEnum.BACON.getName())
-				.setValue(3f)
+				.setValue(2f)
 		);
 		IngredientsRepository.instance.add(
 			new Ingredient()

@@ -71,14 +71,21 @@ public class SandwichComposite implements IProduct {
 
 	public List<Ingredient> getIngredients() {
 		List<Ingredient> ingredientList = new ArrayList<Ingredient>();
-		Iterator it = this.ingredientsId.iterator();
-		while (it.hasNext()) {
-			Integer ingredientId = (Integer) it.next();
-			Ingredient ingredient = IngredientsRepository.instance.getIngredientMap().get(ingredientId);
-			if (ingredient != null) {
-				ingredientList.add(ingredient);
+		if (this.ingredientsId != null) {
+			Iterator it = this.ingredientsId.iterator();
+			while (it.hasNext()) {
+				Integer ingredientId = (Integer) it.next();
+				Ingredient ingredient = IngredientsRepository.instance.getIngredientMap().get(ingredientId);
+				if (ingredient != null) {
+					ingredientList.add(ingredient);
+				}
 			}
+			return ingredientList;
 		}
-		return ingredientList;
+		return null;
+	}
+
+	public String toString() {
+		return "[" + this.id + ": { name: " + this.name + ", value: " + this.value + "} ]";
 	}
 }
